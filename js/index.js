@@ -1,10 +1,7 @@
-import { useEffect } from 'react';
-import { useState } from 'react';
-
 function MusicPlayer(file) {
-    const [playing, setIsPlaying] = useState(false);
-    const [progress, setProgress] = useState(0);
-    const [audio, setAudio] = useState(null);
+    const [playing, setIsPlaying] = React.useState(false);
+    const [progress, setProgress] = React.useState(0);
+    const [audio, setAudio] = React.useState(null);
 
     function handlePlayButton() {
         setIsPlaying(true);
@@ -14,7 +11,7 @@ function MusicPlayer(file) {
         setProgress(audio.currentTime);
     }
 
-    useEffect(() => {
+    React.useEffect(() => {
         if(playing) {
             setAudio(new Audio({file}))
             audio.play();
@@ -41,5 +38,5 @@ function MusicPlayerProgressBar(progress, max) {
     return React.createElement("input", { type: "range", min: "0", max: {max}, class: "progressBar" }, null);
 }
 
-ReactDOM.render( React.createElement(MusicPlayer), 
-document.getElementById("root") );
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(React.createElement(MusicPlayer));
