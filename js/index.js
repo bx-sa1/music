@@ -20,7 +20,7 @@ function MusicPlayer(file) {
         }
     }, [playing]);
 
-    return React.createElement(div, {}, 
+    return React.createElement("div", {}, 
         React.createElement(MusicPlayerArt, {}, null),
         React.createElement(MusicPlayerPlayButton, { onclick: handlePlayButton, playing: playing}, null),
         React.createElement(MusicPlayerProgressBar, { progress: progress, max: audio.duration }, null))
