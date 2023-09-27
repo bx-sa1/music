@@ -1,3 +1,6 @@
+import { useEffect } from 'react';
+import { useState } from 'react';
+
 function MusicPlayer(file) {
     const [playing, setIsPlaying] = useState(false);
     const [progress, setProgress] = useState(0);
