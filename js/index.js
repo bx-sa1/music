@@ -2,6 +2,7 @@ function MusicPlayer(file) {
     const [playing, setIsPlaying] = React.useState(false);
     const [progress, setProgress] = React.useState(0);
     const [audio, setAudio] = React.useState(null);
+    const [duration, setDuration] = React.useState(0);
 
     function handlePlayButton() {
         setIsPlaying(true);
@@ -16,6 +17,7 @@ function MusicPlayer(file) {
             setAudio(new Audio({file}))
             audio.play();
             audio.ontimeupdate(handleAudioProgress)
+            setDuration(audio.duration);
             return () => audio.pause();
         }
     }, [playing]);
@@ -23,7 +25,7 @@ function MusicPlayer(file) {
     return React.createElement("div", {}, 
         React.createElement(MusicPlayerArt, {}, null),
         React.createElement(MusicPlayerPlayButton, { onclick: handlePlayButton, playing: playing}, null),
-        React.createElement(MusicPlayerProgressBar, { progress: progress, max: audio.duration }, null))
+        React.createElement(MusicPlayerProgressBar, { progress: progress, max: duration }, null))
 }
 
 function MusicPlayerPlayButton(onclick, playing) {
