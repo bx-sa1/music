@@ -39,7 +39,7 @@ function MusicPlayerArt() {
 function MusicPlayerProgressBar(progress, max) {
     return React.createElement("div", {}, 
         React.createElement("input", { type: "range", name: "progress_bar", min: "0", max: {max}, value: {progress}, step: 1, class: "progressBar" }, null), 
-        React.createElement("label", { for: "progress_bar" }, '${sec_to_min(progress)}/${sec_to_min(max)}')
+        React.createElement("label", { for: "progress_bar" }, `${sec_to_min(progress)}/${sec_to_min(max)}`)
     );
 }
 
