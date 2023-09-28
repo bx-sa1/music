@@ -1,51 +1,164 @@
-function MusicPlayer(file) {
-    const [playing, setIsPlaying] = React.useState(false);
-    const [progress, setProgress] = React.useState(0);
-    const [audio, setAudio] = React.useState(null);
-    const [duration, setDuration] = React.useState(0);
+const ARTWORK_SIZE = 32;
+const music_data = fetch("./data/musics.json")
+      .then((response) => response.json())
+      .catch((e) => console.error(e));
 
-    function handlePlayButton() {
-        setIsPlaying(true);
+const e = React.createElement;
+
+function App(props) {
+    children = [];
+    for(i = 0; i < music_data.length(); i++) {
+        const m = music_data[i];
+        children.push(e(
+            Music,
+            {
+                title: m.title,
+                art: m.art,
+                file: m.file
+            }
+        ));
     }
 
-    function handleAudioProgress(event) {
-        setProgress(audio.currentTime);
+    return e(
+        "div",
+        {},
+        e(
+            "h1",
+            { id: "title" },
+            "ProdByBS"
+        ),
+        children
+    );
+}
+
+function Music(props) {
+    return e(
+        "div",
+        { class: "music" },
+        e(
+            MusicInfo,
+            {
+                title: props.title,
+                art: props.art
+            },
+            null
+        ),
+        e(
+            MusicPlayer,
+            {
+                file: props.file
+            },
+            null
+        )
+    )
+}
+
+function MusicPlayer(props) {
+    const [playing, setIsPlaying] = React.useState(false);
+    const [progress, setProgress] = React.useState(0);
+    const audio = React.useRef(null);
+
+    const handlePlayButton = () => {
+        console.log("Playing!");
+        setIsPlaying(true);
+
+    }
+
+    const handleAudioProgress = (event) => {
+        console.log(audio.current.currentTime);
+        setProgress(audio.current.currentTime);
     }
 
     React.useEffect(() => {
         if(playing) {
-            setAudio(new Audio({file}))
-            audio.play();
-            audio.ontimeupdate(handleAudioProgress)
-            setDuration(audio.duration);
-            return () => audio.pause();
+            audio.current = new Audio(props.file)
+            audio.current.play();
+            audio.current.addEventListener("timeupdate", handleAudioProgress);
+            return () => audio.current.pause();
         }
     }, [playing]);
 
-    return React.createElement("div", {}, 
-        React.createElement(MusicPlayerArt, {}, null),
-        React.createElement(MusicPlayerPlayButton, { onclick: handlePlayButton, playing: playing}, null),
-        React.createElement(MusicPlayerProgressBar, { progress: progress, max: duration }, null))
+    return e(
+        "div",
+        { class: "music_player" },
+        e(
+            MusicPlayerPlayButton,
+            {
+                playing: playing,
+                onClick: handlePlayButton
+            },
+            null
+        ),
+        e(
+            MusicPlayerProgressBar,
+            {
+                progress: progress,
+                max: (audio.current == null ? 0 : audio.current.duration)
+            },
+            null
+        )
+    );
 }
 
-function MusicPlayerPlayButton(onclick, playing) {
-    return React.createElement("button", { onclick: {onclick} }, "Play!");
+function MusicPlayerPlayButton(props) {
+    return e("button", { class: "music_player_button", onClick: props.onClick }, "Play!");
 }
 
-function MusicPlayerArt() {
-
+function MusicInfo(props) {
+    return e(
+        "div",
+        { class: "music_info" },
+        e(
+            "img",
+            {
+                src: props.art,
+                width: ARTWORK_SIZE,
+                height: ARTWORK_SIZE
+            },
+            null
+        ),
+        e(
+            "p",
+            {},
+            props.title
+        )
+    );
 }
 
-function MusicPlayerProgressBar(progress, max) {
-    return React.createElement("div", {}, 
-        React.createElement("input", { type: "range", name: "progress_bar", min: "0", max: {max}, value: {progress}, step: 1, class: "progressBar" }, null), 
-        React.createElement("label", { for: "progress_bar" }, `${sec_to_min(progress)}/${sec_to_min(max)}`)
+function MusicPlayerProgressBar(props) {
+    return e(
+        "div",
+        { class: "music_player_progress" },
+        e(
+            "input",
+            {
+                type: "range",
+                name: "progress_bar",
+                min: "0",
+                max: props.max,
+                value: props.progress,
+                step: 1,
+                class: "progressBar"
+            },
+            null
+        ),
+        e(
+            "label",
+            {
+                for: "progress_bar"
+            },
+            `${sec_to_min(props.progress)}/${sec_to_min(props.max)}`
+        )
     );
 }
 
 function sec_to_min(sec) {
-    return `${Math.floor(sec/60)}:${sec % 60}`
+    return `${Math.floor(sec/60)}:${pad(Math.trunc(sec % 60))}`
+}
+
+function pad(num) {
+    return (num < 10) ? '0' + num.toString() : num.toString();
 }
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(React.createElement(MusicPlayer));
+root.render(React.createElement(App, {}, null));
